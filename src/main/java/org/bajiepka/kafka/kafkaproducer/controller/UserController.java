@@ -1,6 +1,7 @@
 package org.bajiepka.kafka.kafkaproducer.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -14,14 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class UserController {
 
-    private final String KAFKA_TOPIC = "common";
+    @Value(value = "${kafka.topic}")
+    private String topic;
+
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
 
     @GetMapping("/publish/{message}")
     public String post(@PathVariable("message") final String message) {
 
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(KAFKA_TOPIC, message);
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, message);
 
         future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
 
